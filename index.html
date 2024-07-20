@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #weather-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <input id="city-input" type="text" placeholder="Enter a city">
+    <button id="submit-button">Get Weather</button>
+    <div id="weather-container"></div>
+
+    <script>
+        const apiKey = 'YOUR_API_KEY_HERE';
+        const apiUrl = `http://api.weatherapi.com/v1/current.json`;
+
+        const inputField = document.getElementById('city-input');
+        const submitButton = document.getElementById('submit-button');
+        const weatherContainer = document.getElementById('weather-container');
+
+        submitButton.addEventListener('click', async () => {
+            const city = inputField.value.trim();
+            if (city) {
+                try {
+                    const response = await fetch(`${apiUrl}?key=${apiKey}&q=${city}`);
+                    const data = await response.json();
+                    const currentWeather = data.current;
+                    const location = data.location;
+
+                    const weatherHTML = `
+                        <h2>${location.name}, ${location.country}</h2>
+                        <p>Temperature: ${currentWeather.temp_c}°C</p>
+                        <p>Wind Speed: ${currentWeather.wind_kph} km/h</p>
+                        <p>Wind Direction: ${currentWeather.wind_dir}</p>
+                        <p>Cloudiness: ${currentWeather.cloud}% <img src="${currentWeather.condition.icon}" alt="Weather Icon"></p>
+                    `;
+
+                    weatherContainer.innerHTML = weatherHTML;
+                } catch (error) {
+                    console.error(error);
+                    weatherContainer.innerHTML = 'Error: Unable to fetch weather data';
+                }
+            } else {
+                weatherContainer.innerHTML = 'Please enter a city';
+            }
+        });
+    </script>
+</body>
+</html>
